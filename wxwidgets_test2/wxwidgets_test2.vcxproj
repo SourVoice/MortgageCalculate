@@ -25,6 +25,7 @@
     <ClInclude Include="cPanel.h" />
     <ClInclude Include="PortfolioLoan.h" />
     <ClInclude Include="ProvidentFundLoan.h" />
+    <ClInclude Include="IDs.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cApp.cpp" />

@@ -58,6 +58,7 @@ void cPanel::OnClickButton_CommercialLoan(wxCommandEvent& event)
 
 void cPanel::OnClickButton_PortfoioLoan(wxCommandEvent& event)
 {
+	PortfolioLoan* Dialog_PortfoioLoan = new PortfolioLoan(Frame);
 }
 
 void cPanel::OnClickButton_ProvidentFundLoan(wxCommandEvent& event)

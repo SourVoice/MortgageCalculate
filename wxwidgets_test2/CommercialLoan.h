@@ -1,7 +1,12 @@
+#pragma once
+
 /*商业贷款类*/
 #include "wx/wx.h"
-
 #include"cPanel.h"
+#include"IDs.h"
+#ifndef _COMMERCIALLOAN_H_
+#define _COMMERCIALLOAN_H_
+
 class CommercialLoan :public wxDialog
 {
 public:
@@ -36,7 +41,7 @@ public:
     double HousePrice = 0;
     double HouseSquare = 0;
     //
-    double Value;
+    double LoanToValue = 0;
     double Months = 360;
     //基点,利率
     double InitialInterest;
@@ -45,17 +50,17 @@ public:
 
     //results
     double DownRepay;
-    double FirstMonthRepay;
-    double MonthlyReduce;
-    double TotalLoan;
-    
-    double TotalRepay;
-    
-    double MonthInterestRate;
-    double MonthPrincipalRepay;
-    double MonthlyRepay;
-    double FirstMonthInterest;
-    double TotalInterest;
+    double FirstMonthRepay;                             //首月还款
+    double MonthlyReduce;                               //每月递减
+    double TotalLoan;                                   //总贷款
+    double TotalRepay;                                  //总还款
+    double TotalInterest;                               //总支付利息
+
+    double DownPayment;                                 //首付
+    double MonthInterestRate;                           //月利率
+    double MonthPrincipalRepay;                         //每月本金支付
+    double EveryMonthRepay;                             //等额本息  
+    double FirstMonthInterest;                          //等额本金首月利息
 
     
 private:
@@ -64,7 +69,13 @@ private:
     void OnSetInterestType(wxCommandEvent& event);
 	void OnSetRepayType(wxCommandEvent& event);
     
-    void OnSetValue(wxCommandEvent& event);
+    void OnSetHousePrice(wxCommandEvent& event);
+    void OnSetHouseSquare(wxCommandEvent& event);
+    void MessageBoxWindowModalClosed(wxWindowModalDialogEvent& event);
+    
+
+
+    void OnSetLoanToValue(wxCommandEvent& event);
     void OnSetMonth(wxCommandEvent& event);
     void OnSetTotalLoan(wxCommandEvent& event);
 
@@ -77,35 +88,12 @@ private:
     void ProcessDataByPrinciple();
     void ProcessDataByInterest();
 
-    void CreateResultDialog();
-
+    void ResultByPricipalDialog();
+    void ResultByInterestDialog();
     wxBoxSizer* Sizer = new wxBoxSizer(wxVERTICAL);
     wxFrame* Frame;
     
     wxDECLARE_EVENT_TABLE();
 
 };
-enum {
-    ID_TEXTCTRL_HOUSE_PRICE = 201,
-    ID_TEXTCTRL_HOUSE_SQUARE,
-    ID_TEXTCRTL_TOTAL_LOAN,
-    ID_TEXTCTRL_PERCENTAGE_POINT,
-
-    ID_CHOICE_LTV,
-    ID_CHOICE_LTY,
-    ID_CHOICE_CALCULATE_TYPE,
-    ID_CHOICE_INTEREST_TYPE,
-    
-    ID_TEXTCTRL_CHOSEN_TYPE_SHOW_INTEREST,
-    ID_TEXTCTRL_SHOW_INTEREST,
-    ID_TEXTCTRL_SHOW_POINT,
-    ID_TEXTCTRL_SHOW_RESULT,
-
-    ID_CHECKBOX_REPAYTYPE_PRINCIPAL_INTEREST,   //等额本息
-	ID_CHECKBOX_REPAYTYPE_PRINCIPAL,            //等额本金
-
-    ID_BUTTON_ACTION,
-    ID_BUTTON_CLEAR,
-
-    ID_INTEREST,
-};
+#endif // !_COMMERCIALLOAN_H_
