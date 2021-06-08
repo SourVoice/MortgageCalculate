@@ -41,7 +41,7 @@ public:
     double HousePrice = 0;
     double HouseSquare = 0;
     //
-    double LoanToValue = 0;
+    double LoanToValue = 0.8;
     double Months = 360;
     //基点,利率
     double InitialInterest;

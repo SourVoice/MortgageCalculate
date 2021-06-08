@@ -573,8 +573,8 @@ void CommercialLoan::MessageBoxWindowModalClosed(wxWindowModalDialogEvent& event
 
 void CommercialLoan::OnSetLoanToValue(wxCommandEvent& event)                            //按揭成数
 {
-    double InitialValue = 8;
-    LoanToValue = InitialValue - 0.5 * event.GetSelection();
+    double InitialValue = 0.8;
+    LoanToValue = InitialValue - 0.05 * event.GetSelection();
 }
 
 void CommercialLoan::OnSetMonth(wxCommandEvent& event)                                  //还款次数
@@ -685,6 +685,7 @@ void CommercialLoan::ResultByPricipalDialog()
 
         rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
         rowSizer->Add(StaticText);
+		rowSizer->Add(25, 0);
         rowSizer->Add(OutputDownPayment, 1);//(wxNumberFormatter::ToString(ResultIntersetRate, accurracy)
 
 		colSizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
@@ -758,7 +759,7 @@ void CommercialLoan::ResultByPricipalDialog()
     ReaultDialog->ShowModal();
 
 }
-
+//等额本息
 void CommercialLoan::ResultByInterestDialog()
 {
     wxDialog* ReaultDialog = new wxDialog(this, wxID_ANY,
