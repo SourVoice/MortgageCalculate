@@ -40,7 +40,7 @@ public:
     //房子信息
     double HousePrice = 0;
     double HouseSquare = 0;
-    //
+    //按揭成数和按揭次数默认值
     double LoanToValue = 0.8;
     double Months = 360;
     //基点,利率

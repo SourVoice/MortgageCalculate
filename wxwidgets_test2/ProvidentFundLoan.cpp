@@ -528,7 +528,7 @@ void ProvidentFundLoan::ResultByPricipalDialog()
     int accurracy = 2;
     //
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
-    StaticText = new wxStaticText(ReaultDialog, wxID_ANY, wxT("结果："));
+    StaticText = new wxStaticText(ReaultDialog, wxID_ANY, wxT("结果：(*以下结果仅供参考)"));
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
     rowSizer->Add(StaticText);
@@ -628,7 +628,7 @@ void ProvidentFundLoan::ResultByInterestDialog()
     int accurracy = 2;
     //
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
-    StaticText = new wxStaticText(ReaultDialog, wxID_ANY, wxT("结果："));
+    StaticText = new wxStaticText(ReaultDialog, wxID_ANY, wxT("结果：(*以下结果仅供参考)"));
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
     rowSizer->Add(StaticText);

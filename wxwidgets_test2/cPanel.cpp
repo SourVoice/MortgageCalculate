@@ -33,11 +33,12 @@ cPanel::cPanel(wxFrame* parent)
         new wxButton(this, ButtonCommercialLoan, "CommercialLoan"),
         wxSizerFlags().Center());
     grid->Add(
+        new wxButton(this, ButtonProvidentFundLoan, "ProvidentFundLoan"),
+		wxSizerFlags().Center());
+    grid->Add(
         new wxButton(this, ButtonPortfoioLoan, "PortfoioLoan"),
         wxSizerFlags().Center());
-    grid->Add(
-        new wxButton(this, ButtonProvidentFundLoan, "ProvidentFundLoan"),
-        wxSizerFlags().Center());
+
 
 
     //将grid与panel容器适配,加入到panelsizer中
