@@ -33,9 +33,9 @@ public:
     wxCheckBox* CheckRepayByInterest;
     wxCheckBox* CheckRepayByPricipal;
 
-    bool ChosenBySquare;
-    bool ChosenByPrice;
-	bool FirstChosenCaculateType;
+    bool ChooseByHouse = true;
+    bool ChooseByTotalLoan = false;
+
 
     //房子信息
     double HousePrice = 0;
@@ -71,7 +71,6 @@ private:
     
     void OnSetHousePrice(wxCommandEvent& event);
     void OnSetHouseSquare(wxCommandEvent& event);
-    void MessageBoxWindowModalClosed(wxWindowModalDialogEvent& event);
     
 
 
@@ -84,12 +83,27 @@ private:
 	void OnGetInterestResult();
 
     void OnActionButton(wxCommandEvent& event);
+    void OnClearButton(wxCommandEvent& event);
 
     void ProcessDataByPrinciple();
     void ProcessDataByInterest();
 
     void ResultByPricipalDialog();
     void ResultByInterestDialog();
+    
+    //异常处理
+    void ProcessInputPriceError();
+    void ProcessInputSquareError();
+    void ProcessInputTotalLoanError();
+    void ProcessInputPercentagePointError();
+    void ProcessCheckBoxError();
+    void ProcessInputPriceEmptyError();
+    void ProcessInputSquareEmptyError();
+    void ProcessInputPercentagePointEmptyError();
+    void ProcessInputTotalLoanEmptyError();
+    void MessageBoxWindowModalClosed(wxWindowModalDialogEvent& event);
+
+    
     wxBoxSizer* Sizer = new wxBoxSizer(wxVERTICAL);
     wxFrame* Frame;
     

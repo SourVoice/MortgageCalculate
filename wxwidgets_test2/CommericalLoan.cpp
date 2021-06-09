@@ -31,6 +31,7 @@ BEGIN_EVENT_TABLE(CommercialLoan,wxDialog)
     EVT_CHECKBOX(ID_CHECKBOX_REPAYTYPE_PRINCIPAL,               CommercialLoan::OnSetRepayType)
 
     EVT_BUTTON(ID_BUTTON_ACTION,                                CommercialLoan::OnActionButton)
+    EVT_BUTTON(ID_BUTTON_CLEAR,                                 CommercialLoan::OnClearButton)
 END_EVENT_TABLE()
 CommercialLoan::CommercialLoan(wxFrame*Frame)
 	:wxDialog(Frame, wxID_ANY, "CommercialLoan",
@@ -290,7 +291,7 @@ CommercialLoan::CommercialLoan(wxFrame*Frame)
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
 
     wxButton* ActionButton = new wxButton(this, ID_BUTTON_ACTION, "开始计算");
-    wxButton* ClearButton = new wxButton(this, ID_BUTTON_ACTION, "清空重填");
+    wxButton* ClearButton = new wxButton(this, ID_BUTTON_CLEAR, "清空重填");
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
     rowSizer->Add(ActionButton);
@@ -320,8 +321,8 @@ void CommercialLoan::OnSetCalculateType(wxCommandEvent& event)
         InputTotalLoan->Enable(false);                          //禁用并清空InoutTotalLoan
         Choice_LoanMortgages->Enable(true);
         
-        ChosenBySquare = true;
-        ChosenByPrice = false;
+        ChooseByHouse = true;
+        ChooseByTotalLoan = false;
         TotalLoan = 0;
     }
     else if (event.GetSelection() == 1) {                       //选择按总额计算
@@ -334,8 +335,8 @@ void CommercialLoan::OnSetCalculateType(wxCommandEvent& event)
         InputTotalLoan->Enable(true);
         Choice_LoanMortgages->Enable(false);
 
-        ChosenByPrice = true;
-        ChosenBySquare = false;
+        ChooseByTotalLoan = true;
+        ChooseByHouse = false;
 
         HousePrice = 0;
         HouseSquare = 0;
@@ -422,38 +423,12 @@ void CommercialLoan::OnSetHousePrice(wxCommandEvent& event)
 
     wxString InputPrice_string = InputPrice->GetLineText(0);
     for (int i = 0; i < InputPrice->GetLineLength(0); i++) {
-        if (!wxIsxdigit(InputPrice_string[i])) {                                        //输入不合法
-            InputPrice->Clear();                                                        //清空输入
-            wxMessageDialog* dialog = new wxMessageDialog(this,                         //给予用户提示
-                "This is a message box",
-                "Message box text",
-                wxCENTER |
-                wxNO_DEFAULT | wxYES_NO | wxCANCEL |
-                wxICON_INFORMATION);
-
-            wxString extmsg;
-            if (dialog->SetYesNoCancelLabels
-            (
-                "Answer &Yes",
-                "Answer &No",
-                "Refuse to answer"
-            ))
-            {
-                extmsg = "You have just input an ilegal char,\n"
-                    "Please input a digit .";
-            }
-            else
-            {
-                extmsg = "Custom button labels are not supported on this platform,\n"
-                    "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
-            }
-            dialog->SetExtendedMessage(extmsg);
-            dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
-                &CommercialLoan::MessageBoxWindowModalClosed, this);
-            dialog->ShowWindowModal();
+        if (!wxIsxdigit(InputPrice_string[i])) {                                                    //输入不合法
+            InputPrice->Clear();                                                                    //清空输入
+            ProcessInputPriceError();
         }
     }
-    if (!InputPrice->IsEmpty() && !InputPrice->GetLineText(0).ToDouble(&HousePrice)) {          //输入合法，将数据送入指定变量
+    if (!InputPrice->IsEmpty() && !InputPrice->GetLineText(0).ToDouble(&HousePrice)) {              //输入合法，将数据送入指定变量
         /*error*/
     }
 
@@ -466,36 +441,11 @@ void CommercialLoan::OnSetHouseSquare(wxCommandEvent& event)
     }
     wxString InputSquare_string = InputSquare->GetLineText(0);
     for (int i = 0; i<InputSquare->GetLineLength(0); i++) {
-		if (!wxIsxdigit(InputSquare_string[i])) {                                       //输入不合法
-            InputSquare->Clear();                                                       //清空输入
-            wxMessageDialog* dialog = new wxMessageDialog(this,                         //用户提示信息
-                "This is a message box",
-                "Message box text",
-                wxCENTER |
-                wxNO_DEFAULT | wxYES_NO | wxCANCEL |
-                wxICON_INFORMATION);
+        if (!wxIsxdigit(InputSquare_string[i])) {                                                   //输入不合法
+            InputSquare->Clear();                                                                   //清空输入
+            ProcessInputSquareError();
 
-            wxString extmsg;
-            if (dialog->SetYesNoCancelLabels
-            (
-                "Answer &Yes",
-                "Answer &No",
-                "Refuse to answer"
-            ))
-            {
-                extmsg = "You have just input an ilegal char,\n"
-                    "Please input a digit .";
-            }
-            else
-            {
-                extmsg = "Custom button labels are not supported on this platform,\n"
-                    "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
-            }
-            dialog->SetExtendedMessage(extmsg);
-            dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
-                &CommercialLoan::MessageBoxWindowModalClosed, this);
-            dialog->ShowWindowModal();
-	    }
+        }
     }
     if (!InputSquare->IsEmpty()&&!InputSquare->GetLineText(0).ToDouble(&HouseSquare)) {             //输入合法，将数据送入指定变量
         /*error*/
@@ -510,35 +460,9 @@ void CommercialLoan::OnSetTotalLoan(wxCommandEvent& event)
 
     wxString InputTotalLoan_string = InputTotalLoan->GetLineText(0);
     for (int i = 0; i < InputTotalLoan->GetLineLength(0); i++) {
-        if (!wxIsxdigit(InputTotalLoan_string[i])) {                                        //输入不合法
-            InputTotalLoan->Clear();                                                        //清空输入
-            wxMessageDialog* dialog = new wxMessageDialog(this,                             //给予用户提示
-                "This is a message box",
-                "Message box text",
-                wxCENTER |
-                wxNO_DEFAULT | wxYES_NO | wxCANCEL |
-                wxICON_INFORMATION);
-
-            wxString extmsg;
-            if (dialog->SetYesNoCancelLabels
-            (
-                "Answer &Yes",
-                "Answer &No",
-                "Refuse to answer"
-            ))
-            {
-                extmsg = "You have just input an ilegal char,\n"
-                    "Please input a digit .";
-            }
-            else
-            {
-                extmsg = "Custom button labels are not supported on this platform,\n"
-                    "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
-            }
-            dialog->SetExtendedMessage(extmsg);
-            dialog->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
-                &CommercialLoan::MessageBoxWindowModalClosed, this);
-            dialog->ShowWindowModal();
+        if (!wxIsxdigit(InputTotalLoan_string[i])) {                                                    //输入不合法
+            InputTotalLoan->Clear();                                                                    //清空输入
+            ProcessInputTotalLoanError();
         }
     }
     if (!InputTotalLoan->IsEmpty() && !InputTotalLoan->GetLineText(0).ToDouble(&TotalLoan)) {          //输入合法，将数据送入指定变量
@@ -547,37 +471,13 @@ void CommercialLoan::OnSetTotalLoan(wxCommandEvent& event)
 
 }
 
-void CommercialLoan::MessageBoxWindowModalClosed(wxWindowModalDialogEvent& event)
-{
-    wxDialog* dialog = event.GetDialog();
-    switch (dialog->GetReturnCode())
-    {
-    case wxID_YES:
-        wxLogStatus("You pressed \"Yes\"");
-        break;
-
-    case wxID_NO:
-        wxLogStatus("You pressed \"No\"");
-        break;
-
-    case wxID_CANCEL:
-        wxLogStatus("You pressed \"Cancel\"");
-        break;
-
-    default:
-        wxLogError("Unexpected wxMessageDialog return code!");
-    }
-    delete dialog;
-}
-
-
-void CommercialLoan::OnSetLoanToValue(wxCommandEvent& event)                            //按揭成数
+void CommercialLoan::OnSetLoanToValue(wxCommandEvent& event)                                            //按揭成数
 {
     double InitialValue = 0.8;
     LoanToValue = InitialValue - 0.05 * event.GetSelection();
 }
 
-void CommercialLoan::OnSetMonth(wxCommandEvent& event)                                  //还款次数
+void CommercialLoan::OnSetMonth(wxCommandEvent& event)                                                  //还款次数
 {
     double InitialValue = 360;
 	Months = InitialValue - 12 * event.GetSelection();
@@ -591,20 +491,32 @@ void CommercialLoan::OnUpdateShowInterest(wxCommandEvent& event) {
     );
 }
 
-void CommercialLoan::OnUpdateShowPoint(wxCommandEvent& event)                           //显示基点
+void CommercialLoan::OnUpdateShowPoint(wxCommandEvent& event)                            //显示基点
 {   
-	if (!InputPercentagePoint->GetLineText(0).ToDouble(&BasePoint)) {
-        /*error*/
+    if (InputPercentagePoint->IsEmpty()) {
+        event.Skip();
     }
-    BasePoint /= 100.0;
+    wxString InputPercentagePoint_string = InputPercentagePoint->GetLineText(0);
+	for (int i = 0; i < InputPercentagePoint->GetLineLength(0); i++) {                  //基点输入异常处理
+        if (!wxIsdigit(InputPercentagePoint_string[i])) {
+            InputPercentagePoint->Clear();
+            ProcessInputPercentagePointError();
+        }
+    }
+    if (!InputPercentagePoint->IsEmpty()) {                                             //正常输入存入数据
+        if (!InputPercentagePoint->GetLineText(0).ToDouble(&BasePoint)) {
+			/*error*/
+        }
+        BasePoint /= 100.0;
 
-    int accurracy = 2;
-    ShowPoint->SetValue(wxNumberFormatter::ToString(BasePoint, accurracy));
+        int accurracy = 2;
+        ShowPoint->SetValue(wxNumberFormatter::ToString(BasePoint, accurracy));
 
-    OnGetInterestResult();
+		OnGetInterestResult();
+    }
 }
 
-void CommercialLoan::OnGetInterestResult()                                              //显示计算所得年利率
+void CommercialLoan::OnGetInterestResult()                                                                  //显示计算所得年利率
 {
     if (!ShowInterest->GetLineText(0).ToDouble(&InitialInterest)) {
         /*error*/
@@ -618,19 +530,50 @@ void CommercialLoan::OnGetInterestResult()                                      
 
 void CommercialLoan::OnActionButton(wxCommandEvent& event)
 {
-    if (CheckRepayByPricipal->IsChecked()) {
-        ProcessDataByPrinciple();
-        ResultByPricipalDialog();
-    }
+    ///*处理checkbox异常*/
+    //if (!CheckRepayByPricipal->IsChecked() || !CheckRepayByInterest->IsChecked()) {                       //异常处理，防止用户没有选择checkbox
+    //    ProcessCheckBoxError();
+    //}
+    /*checkbox选择后可进行操作*/
+	 if (CheckRepayByPricipal->IsChecked()) {
+         if (ChooseByHouse) {                                                                                //选择按房屋计算但并没有填入数据
+             if (InputPrice->IsEmpty()) {
+                 ProcessInputPriceEmptyError();
+             }
+             else if (InputSquare->IsEmpty()) {
+                 ProcessInputSquareEmptyError();
+             }
+             else if (InputPercentagePoint->IsEmpty()) {
+                 ProcessInputPercentagePointEmptyError();
+             }
+             else {
+                 ProcessDataByPrinciple();
+                 ResultByPricipalDialog();
+			 }
+		 }
+         else if (ChooseByTotalLoan) {
+             if (InputTotalLoan->IsEmpty()) {
+                 ProcessInputTotalLoanEmptyError();
+             }
+         }
+	 }
     else if (CheckRepayByInterest->IsChecked()) {
         ProcessDataByInterest();
 		ResultByInterestDialog();
     }
 }
 
+void CommercialLoan::OnClearButton(wxCommandEvent& event)
+{
+    InputPrice->Clear();
+    InputSquare->Clear();
+    InputTotalLoan->Clear();
+	InputPercentagePoint->Clear();
+}
+
 void CommercialLoan::ProcessDataByPrinciple()                                          
 {
-    if (HouseSquare != 0 && HousePrice != 0) {                                          //等额本金
+    if (HouseSquare != 0 && HousePrice != 0) {                                                          //等额本金
         TotalLoan = HouseSquare * HousePrice * LoanToValue;
 		DownPayment = HouseSquare * HousePrice - TotalLoan;
     }
@@ -677,7 +620,7 @@ void CommercialLoan::ResultByPricipalDialog()
 
     colSizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
     //首付
-    if (DownPayment != 0) {
+    if (ChooseByHouse) {
         rowSizer = new wxBoxSizer(wxHORIZONTAL);
 
         StaticText = new wxStaticText(ReaultDialog, wxID_ANY, wxT("首付: "), wxDefaultPosition, wxDefaultSize);
@@ -776,7 +719,7 @@ void CommercialLoan::ResultByInterestDialog()
 
     colSizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
     //首付
-    if (DownPayment != 0) {
+    if (ChooseByHouse) {
         rowSizer = new wxBoxSizer(wxHORIZONTAL);
 
         StaticText = new wxStaticText(ReaultDialog, wxID_ANY, wxT("首付: "), wxDefaultPosition, wxDefaultSize);
@@ -846,4 +789,197 @@ void CommercialLoan::ResultByInterestDialog()
 
     ReaultDialog->SetSizer(colSizer);
 	ReaultDialog->ShowModal();
+}
+
+
+void CommercialLoan::ProcessInputPriceError()
+{
+    wxMessageDialog* dialog_NotInputHousePrice = new wxMessageDialog(this,                         //给予用户提示
+        "This is a message box",
+        "Message box text",
+        wxCENTER |
+        wxNO_DEFAULT | wxYES_NO | wxCANCEL |
+        wxICON_INFORMATION);
+
+    wxString extmsg;
+    if (dialog_NotInputHousePrice->SetYesNoCancelLabels
+    (
+        "Answer &Yes",
+        "Answer &No",
+        "Refuse to answer"
+    ))
+    {
+        extmsg = "You have just input an ilegal char,\n"
+            "Please input a digit .";
+    }
+    else
+    {
+        extmsg = "Custom button labels are not supported on this platform,\n"
+            "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
+    }
+    dialog_NotInputHousePrice->SetExtendedMessage(extmsg);
+    dialog_NotInputHousePrice->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+        &CommercialLoan::MessageBoxWindowModalClosed, this);
+    dialog_NotInputHousePrice->ShowWindowModal();
+}
+
+void CommercialLoan::ProcessInputSquareError()
+{
+    wxMessageDialog* dialog_NotInputHouseSquare = new wxMessageDialog(this,                         //用户提示信息
+        "This is a message box",
+        "Message box text",
+        wxCENTER |
+        wxNO_DEFAULT | wxYES_NO | wxCANCEL |
+        wxICON_INFORMATION);
+
+    wxString extmsg;
+    if (dialog_NotInputHouseSquare->SetYesNoCancelLabels
+    (
+        "Answer &Yes",
+        "Answer &No",
+        "Refuse to answer"
+    ))
+    {
+        extmsg = "You have just input an ilegal char,\n"
+            "Please input a digit .";
+    }
+    else
+    {
+        extmsg = "Custom button labels are not supported on this platform,\n"
+            "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
+    }
+    dialog_NotInputHouseSquare->SetExtendedMessage(extmsg);
+    dialog_NotInputHouseSquare->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+        &CommercialLoan::MessageBoxWindowModalClosed, this);
+    dialog_NotInputHouseSquare->ShowWindowModal();
+}
+
+void CommercialLoan::ProcessInputTotalLoanError()
+{
+    wxMessageDialog* dialog_NotInputTotalLoan = new wxMessageDialog(this,                             //给予用户提示
+        "This is a message box",
+        "Message box text",
+        wxCENTER |
+        wxNO_DEFAULT | wxYES_NO | wxCANCEL |
+        wxICON_INFORMATION);
+
+    wxString extmsg;
+    if (dialog_NotInputTotalLoan->SetYesNoCancelLabels
+    (
+        "Answer &Yes",
+        "Answer &No",
+        "Refuse to answer"
+    ))
+    {
+        extmsg = "You have just input an ilegal char,\n"
+            "Please input a digit .";
+    }
+    else
+    {
+        extmsg = "Custom button labels are not supported on this platform,\n"
+            "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
+    }
+    dialog_NotInputTotalLoan->SetExtendedMessage(extmsg);
+    dialog_NotInputTotalLoan->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+        &CommercialLoan::MessageBoxWindowModalClosed, this);
+    dialog_NotInputTotalLoan->ShowWindowModal();
+}
+void CommercialLoan::ProcessInputPercentagePointError()
+{
+    wxMessageDialog* dialog_NotInputTotalLoan = new wxMessageDialog(this,                             //给予用户提示
+        "This is a message box",
+        "Message box text",
+        wxCENTER |
+        wxNO_DEFAULT | wxYES_NO | wxCANCEL |
+        wxICON_INFORMATION);
+
+    wxString extmsg;
+    if (dialog_NotInputTotalLoan->SetYesNoCancelLabels
+    (
+        "Answer &Yes",
+        "Answer &No",
+        "Refuse to answer"
+    ))
+    {
+        extmsg = "You have just input an ilegal char,\n"
+            "Please input a digit .";
+    }
+    else
+    {
+        extmsg = "Custom button labels are not supported on this platform,\n"
+            "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
+    }
+    dialog_NotInputTotalLoan->SetExtendedMessage(extmsg);
+    dialog_NotInputTotalLoan->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+        &CommercialLoan::MessageBoxWindowModalClosed, this);
+	dialog_NotInputTotalLoan->ShowWindowModal();
+}
+void CommercialLoan::ProcessCheckBoxError()
+{
+    wxMessageDialog* dialog_NotSelectCheckBox = new wxMessageDialog(this,                             //给予用户提示
+        "This is a message box",
+        "Message box text",
+        wxCENTER |
+        wxNO_DEFAULT | wxYES_NO | wxCANCEL |
+        wxICON_INFORMATION);
+
+    wxString extmsg;
+    if (dialog_NotSelectCheckBox->SetYesNoCancelLabels
+    (
+        "Answer &Yes",
+        "Answer &No",
+        "Refuse to answer"
+    ))
+    {
+        extmsg = "You didn't Select The CheckBox,\n"
+            "Please Select One.";
+    }
+    else
+    {
+        extmsg = "Custom button labels are not supported on this platform,\n"
+            "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
+    }
+    dialog_NotSelectCheckBox->SetExtendedMessage(extmsg);
+    dialog_NotSelectCheckBox->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+        &CommercialLoan::MessageBoxWindowModalClosed, this);
+	dialog_NotSelectCheckBox->ShowWindowModal();
+}
+
+void CommercialLoan::ProcessInputPriceEmptyError()
+{
+}
+
+void CommercialLoan::ProcessInputSquareEmptyError()
+{
+}
+
+void CommercialLoan::ProcessInputPercentagePointEmptyError()
+{
+}
+
+void CommercialLoan::ProcessInputTotalLoanEmptyError()
+{
+}
+
+void CommercialLoan::MessageBoxWindowModalClosed(wxWindowModalDialogEvent& event)
+{
+    wxDialog* dialog = event.GetDialog();
+    switch (dialog->GetReturnCode())
+    {
+    case wxID_YES:
+        wxLogStatus("You pressed \"Yes\"");
+        break;
+
+    case wxID_NO:
+        wxLogStatus("You pressed \"No\"");
+        break;
+
+    case wxID_CANCEL:
+        wxLogStatus("You pressed \"Cancel\"");
+        break;
+
+    default:
+        wxLogError("Unexpected wxMessageDialog return code!");
+    }
+    delete dialog;
 }
