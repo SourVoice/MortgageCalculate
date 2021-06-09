@@ -51,33 +51,19 @@ cPanel::~cPanel()
 {
 }
 
-void cPanel::OnClickButton_CommercialLoan(wxCommandEvent& event)
+void cPanel::OnClickButton_CommercialLoan(wxCommandEvent& event)                        //商业型贷款
 {
     CommercialLoan* Dialog_CommercialLoan = new CommercialLoan(Frame);
 }
 
-void cPanel::OnClickButton_PortfoioLoan(wxCommandEvent& event)
+void cPanel::OnClickButton_ProvidentFundLoan(wxCommandEvent& event)                     //公积金贷款
+{
+    ProvidentFundLoan* Dialog_ProvidentFundLoan = new ProvidentFundLoan(Frame);
+}
+
+void cPanel::OnClickButton_PortfoioLoan(wxCommandEvent& event)                          //组合型贷款
 {
 	PortfolioLoan* Dialog_PortfoioLoan = new PortfolioLoan(Frame);
 }
 
-void cPanel::OnClickButton_ProvidentFundLoan(wxCommandEvent& event)
-{
-}
-
-//void cPanel::GetChoice(wxCommandEvent& event)
-//{
-//    if (event.GetEventType() == wxEVT_CHOICE) {
-//        if (event.GetSelection() == 0) {
-//			CommercialLoan* CLPanel = new CommercialLoan(Frame, this, panelSizer);
-//		}
-//        else if (event.GetSelection() == 1) {
-//            PortfolioLoan* PLPanel = new PortfolioLoan();
-//        }
-//        else if (event.GetSelection() == 2) {
-//
-//        }
-//    }
-//    event.Skip();
-//}
 

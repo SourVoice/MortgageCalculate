@@ -1,7 +1,12 @@
 #include "cMain.h"
 #include "cPanel.h"
 
+#include"wx/wx.h"
 #include "wx/choice.h"   //创建choice
+
+#ifndef wxHAS_IMAGES_IN_RESOURCES
+    #include "../sample.xpm"
+#endif 
 wxBEGIN_EVENT_TABLE(cMain, wxFrame)
 EVT_MENU(10001, cMain::OnMenuNew)
 EVT_MENU(10002, cMain::OnMenuOpen)
@@ -12,9 +17,7 @@ END_EVENT_TABLE()
 
 cMain::cMain() : wxFrame(nullptr, wxID_ANY, wxString("mg"), wxDefaultPosition)
 {
-
-
-    /*--------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+    SetIcon(wxICON(sample));
     //添加menu
     //创建file,help菜单
     wxMenu *menuFile = new wxMenu();
@@ -37,18 +40,9 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, wxString("mg"), wxDefaultPosition)
     CreateStatusBar();
     SetStatusText("Welcome to my application for mortgage calculator!");
 
-
-
-
-
     //在子控件(容器窗口)上操作
     cPanel* panel = new cPanel(this);
     sizer->Add(panel, 1, wxEXPAND | wxALL, 5);
-
-
-
-
-
 
     this->SetSizerAndFit(sizer);
 

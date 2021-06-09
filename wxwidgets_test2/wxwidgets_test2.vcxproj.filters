@@ -30,10 +30,10 @@
     <ClInclude Include="PortfolioLoan.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ProvidentFundLoan.h">
+    <ClInclude Include="IDs.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="IDs.h">
+    <ClInclude Include="ProvidentFundLoan.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -56,5 +56,10 @@
     <ClCompile Include="ProvidentFundLoan.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\sample.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

@@ -24,8 +24,8 @@
     <ClInclude Include="CommercialLoan.h" />
     <ClInclude Include="cPanel.h" />
     <ClInclude Include="PortfolioLoan.h" />
-    <ClInclude Include="ProvidentFundLoan.h" />
     <ClInclude Include="IDs.h" />
+    <ClInclude Include="ProvidentFundLoan.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cApp.cpp" />
@@ -34,6 +34,9 @@
     <ClCompile Include="cPanel.cpp" />
     <ClCompile Include="PortfolioLoan.cpp" />
     <ClCompile Include="ProvidentFundLoan.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\sample.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
