@@ -62,4 +62,9 @@
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="sample.xpm">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>

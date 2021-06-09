@@ -1,5 +1,4 @@
-#include "wx\wx.h"
-
+#include "wx/wx.h"
 class cMain : public wxFrame
 {
 private:

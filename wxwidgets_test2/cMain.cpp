@@ -5,7 +5,7 @@
 #include "wx/choice.h"   //创建choice
 
 #ifndef wxHAS_IMAGES_IN_RESOURCES
-    #include "../sample.xpm"
+    #include "../sample"
 #endif 
 wxBEGIN_EVENT_TABLE(cMain, wxFrame)
 EVT_MENU(10001, cMain::OnMenuNew)
@@ -44,7 +44,10 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, wxString("mg"), wxDefaultPosition)
     cPanel* panel = new cPanel(this);
     sizer->Add(panel, 1, wxEXPAND | wxALL, 5);
 
-    this->SetSizerAndFit(sizer);
+    this->SetSizer(sizer);
+    this->SetSize(100, 60);
+    sizer->SetSizeHints(this);
+    //this->SetSizerAndFit(sizer);
 
 }
 cMain::~cMain()
@@ -66,5 +69,8 @@ void cMain::OnMenuExit(wxCommandEvent &event)
 //help菜单选项功能
 void cMain::OnMeunAbout(wxCommandEvent &event)
 {
-    wxMessageBox("This is a mortgage calculator", "About the application", wxOK | wxICON_INFORMATION);
+    wxMessageBox("This is a mortgage calculator\n"
+                  "@SourVoice\n"
+                   "Copyright" ,
+                 "About the application", wxOK | wxICON_INFORMATION);
 }
