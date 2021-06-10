@@ -16,13 +16,12 @@
 #include<cmath>
 
 BEGIN_EVENT_TABLE(PortfolioLoan, wxDialog)
-EVT_COMBOBOX(ID_CHOICE_INTEREST_TYPE, PortfolioLoan::OnSetInterestType)
-
+EVT_COMBOBOX(ID_CHOICE_INTEREST_COMMERCIAL, PortfolioLoan::OnSetCommercialInterestType)
 
 EVT_COMBOBOX(ID_CHOICE_LTY, PortfolioLoan::OnSetMonth)
 
 EVT_TEXT(ID_TEXTCRTL_TOTAL_LOAN, PortfolioLoan::OnSetTotalLoan)
-EVT_TEXT(ID_TEXTCTRL_CHOSEN_TYPE_SHOW_INTEREST, PortfolioLoan::OnUpdateShowInterest)
+EVT_TEXT(ID_TEXTCTRL_CHOSEN_SHOW_INTEREST_COMMERCIAL, PortfolioLoan::OnUpdateShowInterest)
 EVT_TEXT(ID_TEXTCTRL_PERCENTAGE_POINT, PortfolioLoan::OnUpdateShowPoint)
 
 EVT_CHECKBOX(ID_CHECKBOX_REPAYTYPE_PRINCIPAL_INTEREST, PortfolioLoan::OnSetRepayType)
@@ -31,8 +30,8 @@ EVT_CHECKBOX(ID_CHECKBOX_REPAYTYPE_PRINCIPAL, PortfolioLoan::OnSetRepayType)
 EVT_BUTTON(ID_BUTTON_ACTION, PortfolioLoan::OnActionButton)
 EVT_BUTTON(ID_BUTTON_CLEAR, PortfolioLoan::OnClearButton)
 END_EVENT_TABLE()
-PortfolioLoan::PortfolioLoan(wxFrame* Frame)
-    :wxDialog(Frame, wxID_ANY,
+PortfolioLoan::PortfolioLoan(wxFrame* parent)
+    :wxDialog(parent, wxID_ANY,
         wxT("PortfolioLoan"),
         wxDefaultPosition, wxDefaultSize,
         wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER)
@@ -41,12 +40,12 @@ PortfolioLoan::PortfolioLoan(wxFrame* Frame)
     wxBoxSizer* rowSizer;
     /*商业贷款总额*/
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
-    InputCommercialLoan = new wxTextCtrl(this, ID_TEXTCRTL_TOTAL_LOAN,
+    InputCommercialLoan = new wxTextCtrl(this, ID_TEXTCRTL_COMMERCIAL_LOAN,
         wxEmptyString, wxDefaultPosition, wxDefaultSize);
     InputCommercialLoan->SetHint("请输入商业贷款额(万元)");
 
     StaticText = new wxStaticText(this, wxID_ANY,
-        wxT("商业贷款总额: "),
+        wxT("   商业贷款总额: "),
         wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
@@ -58,82 +57,81 @@ PortfolioLoan::PortfolioLoan(wxFrame* Frame)
     //商业利率方式----双控件  |____|: |____| |___%|
     */
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizer_InterestType = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_StaticText_CommercialInterestRate = new wxBoxSizer(wxHORIZONTAL);
     StaticText = new wxStaticText(this, wxID_ANY,
-        wxT("利率方式: "), wxDefaultPosition, wxDefaultSize);
-    sizer_InterestType->Add(StaticText);
+        wxT("         利率方式: "), wxDefaultPosition, wxDefaultSize);
+    sizer_StaticText_CommercialInterestRate->Add(StaticText);
 
-    wxBoxSizer* sizer_InterestChoose_CommercialLoan = new wxBoxSizer(wxHORIZONTAL);//分成两个grid控件,由父grid空间帮助调整
-    wxArrayString string_IT;
-    string_IT.Add(wxT("最新报价利率（LPR）"));
-    string_IT.Add(wxT("基准利率"));
-    string_IT.Add(wxT("基准利率下限（7折）"));
-    string_IT.Add(wxT("基准利率上限（1.1倍）"));
-    string_IT.Add(wxT("基准利率上限（1.05倍）"));
-    string_IT.Add(wxT("基准利率下限（85折）"));
-    wxComboBox* Choice_InteresetType = new wxComboBox(this, ID_CHOICE_INTEREST_TYPE, wxT("最新报价利率（LPR）"),
-        wxDefaultPosition, wxDefaultSize, string_IT, wxCB_DROPDOWN | wxCB_READONLY);
-    ChosenType_ShowInterest_Commercial = new wxTextCtrl(this, ID_TEXTCTRL_CHOSEN_TYPE_SHOW_INTEREST, "4.65", wxDefaultPosition, wxDefaultSize);
-    ChosenType_ShowInterest_Commercial->SetMaxLength(3);
+    wxBoxSizer* sizer_Choice_CommercialInterestRate = new wxBoxSizer(wxHORIZONTAL);//分成两个grid控件,由父grid空间帮助调整
+    wxArrayString string_CommercialInrerestRate;
+    string_CommercialInrerestRate.Add(wxT("最新报价利率（LPR）"));
+    string_CommercialInrerestRate.Add(wxT("基准利率"));
+    string_CommercialInrerestRate.Add(wxT("基准利率下限（7折）"));
+    string_CommercialInrerestRate.Add(wxT("基准利率上限（1.1倍）"));
+    string_CommercialInrerestRate.Add(wxT("基准利率上限（1.05倍）"));
+    string_CommercialInrerestRate.Add(wxT("基准利率下限（85折）"));
+    wxComboBox* Choice_CommercialInterestRate = new wxComboBox(this, ID_CHOICE_INTEREST_COMMERCIAL, wxT("最新报价利率（LPR）"),
+        wxDefaultPosition, wxDefaultSize, string_CommercialInrerestRate, wxCB_DROPDOWN | wxCB_READONLY);
+    ShowCommercialInterestRate = new wxTextCtrl(this, ID_TEXTCTRL_CHOSEN_SHOW_INTEREST_COMMERCIAL, "4.65", wxDefaultPosition, wxDefaultSize);
+    ShowCommercialInterestRate->SetMaxLength(3);
 
 
-    sizer_InterestChoose_CommercialLoan->SetMinSize(wxSize(100, StaticText->GetMinHeight()));
-    sizer_InterestChoose_CommercialLoan->Add(Choice_InteresetType);
-    sizer_InterestChoose_CommercialLoan->Add(20, 0);
-    sizer_InterestChoose_CommercialLoan->Add(ChosenType_ShowInterest_Commercial);
-    sizer_InterestChoose_CommercialLoan->Add(new wxStaticText(this, wxID_ANY, "(%)"));
+    sizer_Choice_CommercialInterestRate->SetMinSize(wxSize(100, StaticText->GetMinHeight()));
+    sizer_Choice_CommercialInterestRate->Add(Choice_CommercialInterestRate);
+    sizer_Choice_CommercialInterestRate->Add(20, 0);
+    sizer_Choice_CommercialInterestRate->Add(ShowCommercialInterestRate);
+    sizer_Choice_CommercialInterestRate->Add(new wxStaticText(this, wxID_ANY, "(%)"));
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
-    rowSizer->Add(sizer_InterestType);//添加双控件
-    rowSizer->Add(sizer_InterestChoose_CommercialLoan, 1, wxEXPAND);
+    rowSizer->Add(sizer_StaticText_CommercialInterestRate);//添加双控件
+    rowSizer->Add(sizer_Choice_CommercialInterestRate, 1, wxEXPAND);
 	Sizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
     /*公积金贷款总额*/
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
-    ProvidentFund = new wxTextCtrl(this, ID_TEXTCRTL_TOTAL_LOAN,
-        wxEmptyString, wxDefaultPosition, wxDefaultSize);
-    ProvidentFund->SetHint("请输入公积金贷款额(万元)");
+	InputProvidentFund = new wxTextCtrl(this, ID_TEXTCRTL_PROVIDENT_LOAN, wxEmptyString, wxDefaultPosition, wxDefaultSize);
+    InputProvidentFund->SetHint("请输入公积金贷款额(万元)");
+    InputProvidentFund->SetMaxLength(9);
 
     StaticText = new wxStaticText(this, wxID_ANY,
-        wxT("公积金贷款总额: "),
-        wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
+                                  wxT("公积金贷款总额: "),wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
     rowSizer->Add(StaticText);
-    rowSizer->Add(ProvidentFund, 1);
+    rowSizer->Add(InputProvidentFund, 1);  
 
     Sizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
     /*                           ____    ____   ____
     //公积金利率方式----双控件  |____|: |____| |___%|
     */
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
-    wxBoxSizer* sizer_InterestType_ProvidentFundInterestRate = new wxBoxSizer(wxHORIZONTAL);
+    wxBoxSizer* sizer_StaticText_ProvidentInterestRate = new wxBoxSizer(wxHORIZONTAL);
     StaticText = new wxStaticText(this, wxID_ANY,
-        wxT("公积金利率: "), wxDefaultPosition, wxDefaultSize);
-    sizer_InterestType->Add(StaticText);
+        wxT("      公积金利率: "), wxDefaultPosition, wxDefaultSize);
+    sizer_StaticText_ProvidentInterestRate->Add(StaticText);
 
-    wxBoxSizer* sizer_InterestChoose = new wxBoxSizer(wxHORIZONTAL);//分成两个grid控件,由父grid空间帮助调整
-    wxArrayString string_IT;
-    string_IT.Add(wxT("最新报价利率（LPR）"));
-    string_IT.Add(wxT("基准利率"));
-    string_IT.Add(wxT("基准利率下限（7折）"));
-    string_IT.Add(wxT("基准利率上限（1.1倍）"));
-    string_IT.Add(wxT("基准利率上限（1.05倍）"));
-    string_IT.Add(wxT("基准利率下限（85折）"));
-    wxComboBox* Choice_InteresetType = new wxComboBox(this, ID_CHOICE_INTEREST_TYPE, wxT("最新报价利率（LPR）"),
-        wxDefaultPosition, wxDefaultSize, string_IT, wxCB_DROPDOWN | wxCB_READONLY);
-    ChosenType_ShowInterest_Commercial = new wxTextCtrl(this, ID_TEXTCTRL_CHOSEN_TYPE_SHOW_INTEREST, "4.65", wxDefaultPosition, wxDefaultSize);
-    ChosenType_ShowInterest_Commercial->SetMaxLength(3);
+    wxBoxSizer* sizer_Choose_ProvidentInterestRate = new wxBoxSizer(wxHORIZONTAL);//分成两个grid控件,由父grid空间帮助调整
+    wxArrayString string_ProvidentInterestRate;
+    string_ProvidentInterestRate.Add(wxT("最新报价利率（LPR）"));
+    string_ProvidentInterestRate.Add(wxT("基准利率"));
+    string_ProvidentInterestRate.Add(wxT("基准利率下限（7折）"));
+    string_ProvidentInterestRate.Add(wxT("基准利率上限（1.1倍）"));
+    string_ProvidentInterestRate.Add(wxT("基准利率上限（1.05倍）"));
+    string_ProvidentInterestRate.Add(wxT("基准利率下限（85折）"));
+    wxComboBox* Choice_ProvidentInterest = new wxComboBox(this, ID_CHOICE_INTEREST_PROTFOLIO, wxT("最新报价利率（LPR）"),
+        wxDefaultPosition, wxDefaultSize, string_ProvidentInterestRate, wxCB_DROPDOWN | wxCB_READONLY);
+    ShowInterstPortfolioRate = new wxTextCtrl(this, ID_TEXTCTRL_CHOSEN_SHOW_INTEREST_PROTFOLIO, "4.65", wxDefaultPosition, wxDefaultSize);
+    ShowInterstPortfolioRate->SetMaxLength(3);
 
 
-    sizer_InterestChoose_CommercialLoan->SetMinSize(wxSize(100, StaticText->GetMinHeight()));
-    sizer_InterestChoose_CommercialLoan->Add(Choice_InteresetType);
-    sizer_InterestChoose_CommercialLoan->Add(20, 0);
-    sizer_InterestChoose_CommercialLoan->Add(ChosenType_ShowInterest_Commercial);
-    sizer_InterestChoose_CommercialLoan->Add(new wxStaticText(this, wxID_ANY, "(%)"));
+    sizer_Choose_ProvidentInterestRate->SetMinSize(wxSize(100, StaticText->GetMinHeight()));
+    sizer_Choose_ProvidentInterestRate->Add(Choice_ProvidentInterest);
+    sizer_Choose_ProvidentInterestRate->Add(20, 0);
+    sizer_Choose_ProvidentInterestRate->Add(ShowInterstPortfolioRate);
+    sizer_Choose_ProvidentInterestRate->Add(new wxStaticText(this, wxID_ANY, "(%)"));
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
-    rowSizer->Add(sizer_InterestType);//添加双控件
-    rowSizer->Add(sizer_InterestChoose_CommercialLoan, 1, wxEXPAND);
+    rowSizer->Add(sizer_StaticText_ProvidentInterestRate);//添加双控件
+    rowSizer->Add(sizer_Choose_ProvidentInterestRate, 1, wxEXPAND);
     Sizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
     /*按揭年数*/
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -171,7 +169,7 @@ PortfolioLoan::PortfolioLoan(wxFrame* Frame)
     wxComboBox* choice_LTY = new wxComboBox(this, ID_CHOICE_LTY, wxT("30年(360期)"),
         wxDefaultPosition, wxDefaultSize, strings_LTY, wxCB_DROPDOWN | wxCB_READONLY);
     StaticText = new wxStaticText(this, wxID_ANY,
-        wxT("按揭年数: "),
+        wxT("         按揭年数: "),
         wxDefaultPosition, wxDefaultSize, wxALIGN_LEFT);
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
     rowSizer->Add(StaticText);
@@ -187,11 +185,10 @@ PortfolioLoan::PortfolioLoan(wxFrame* Frame)
     InputPercentagePoint->SetMaxLength(4);
 
     StaticText = new wxStaticText(this, wxID_ANY,
-        wxT("基点: "), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
+        wxT("               基点: "), wxDefaultPosition, wxDefaultSize, wxALIGN_RIGHT);
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
     rowSizer->Add(StaticText);
-    rowSizer->Add(25, 0);
     rowSizer->Add(InputPercentagePoint, 1);
 
     Sizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
@@ -199,34 +196,36 @@ PortfolioLoan::PortfolioLoan(wxFrame* Frame)
 
     /*                     ____    ____   ____   _____
       计算利率----双控件  |____|: |____|+|____|=|_____|
+                            ①      ②      ③     ④ 
     */
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_Text = new wxBoxSizer(wxHORIZONTAL);
     StaticText = new wxStaticText(this, wxID_ANY,
-        wxT("商业利率: "), wxDefaultPosition, wxDefaultSize);
+        wxT("         商贷利率: "), wxDefaultPosition, wxDefaultSize);
     sizer_Text->Add(StaticText);
 
-    wxBoxSizer* sizer_ShowInterest = new wxBoxSizer(wxHORIZONTAL);
-    ShowInterest = new wxTextCtrl(this, ID_TEXTCTRL_SHOW_INTEREST,
-        wxT("4.65"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    sizer_ShowInterest->Add(ShowInterest);
+    wxBoxSizer* sizer_ShowCommercialInterestRate = new wxBoxSizer(wxHORIZONTAL);
+    //ShowCommercialInterestRate①使用上面选项框时的
 
-    sizer_ShowInterest->Add(new wxStaticText(this, wxID_ANY,
+    ShowCommercialInterestRate_Update = new wxTextCtrl(this, ID_TEXTCTRL_SHOW_COMMERCIAL_INTERESTRATE_UPDATE,
+        wxT("4.65"), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
+    sizer_ShowCommercialInterestRate->Add(ShowCommercialInterestRate_Update);
+    sizer_ShowCommercialInterestRate->Add(new wxStaticText(this, wxID_ANY,
         wxT("(%)+"), wxDefaultPosition, wxDefaultSize));
+
     ShowPoint = new wxTextCtrl(this, ID_TEXTCTRL_SHOW_POINT,
         wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-
-    sizer_ShowInterest->Add(ShowPoint);
-    sizer_ShowInterest->Add(new wxStaticText(this, wxID_ANY,
+    sizer_ShowCommercialInterestRate->Add(ShowPoint);
+    sizer_ShowCommercialInterestRate->Add(new wxStaticText(this, wxID_ANY,
         wxT("(%)="), wxDefaultPosition, wxDefaultSize));
 
-    ShowInterestResult = new wxTextCtrl(this, ID_TEXTCTRL_SHOW_RESULT,
+    ShowCommercialInterestRateResult = new wxTextCtrl(this, ID_TEXTCTRL_SHOW_RESULT,
         wxEmptyString, wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-    sizer_ShowInterest->Add(ShowInterestResult);
+    sizer_ShowCommercialInterestRate->Add(ShowCommercialInterestRateResult);
 
     rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
     rowSizer->Add(sizer_Text);
-    rowSizer->Add(sizer_ShowInterest);
+    rowSizer->Add(sizer_ShowCommercialInterestRate);
 
     Sizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
 
@@ -234,7 +233,7 @@ PortfolioLoan::PortfolioLoan(wxFrame* Frame)
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
     wxBoxSizer* sizer_Text_Repay = new wxBoxSizer(wxHORIZONTAL);
     StaticText = new wxStaticText(this, wxID_ANY,
-        wxT("还款方式: "), wxDefaultPosition, wxDefaultSize);
+        wxT("         还款方式: "), wxDefaultPosition, wxDefaultSize);
     sizer_Text_Repay->Add(StaticText);
 
     CheckRepayByInterest = new wxCheckBox(this, ID_CHECKBOX_REPAYTYPE_PRINCIPAL_INTEREST, wxT("等额本息"));
@@ -279,47 +278,52 @@ PortfolioLoan::~PortfolioLoan()
 {
 }
 
-void PortfolioLoan::OnSetInterestType(wxCommandEvent& event)
+void PortfolioLoan::OnSetCommercialInterestType(wxCommandEvent& event)
 {
 
     if (event.GetSelection() == 0) {
         InputPercentagePoint->Enable(true);
-        ShowInterest->Enable(true);
+        ShowCommercialInterestRate_Update->Enable(true);
         ShowPoint->Enable(true);
-
-        ChosenType_ShowInterest_Commercial->SetValue("4.65");                              //string_IT.Add(wxT("最新报价利率（LPR）"));
+        ShowCommercialInterestRateResult->Enable(true);
+        ShowCommercialInterestRate->SetValue("4.65");                                                //string_IT.Add(wxT("最新报价利率（LPR）"));
     }
     else if (event.GetSelection() >= 1) {
         InputPercentagePoint->Clear();
-        InputPercentagePoint->Enable(false);                                    //禁用并清空InputPoint
-        ShowInterest->Enable(false);                                            //禁用ShowInterest
-        ShowPoint->Clear();                                                     //禁用并清空ShowPoint
+        InputPercentagePoint->Enable(false);                                                        //禁用并清空InputPoint
+        ShowCommercialInterestRate_Update->Enable(false);                                            //禁用ShowInterest
+        ShowPoint->Clear();                                                                        //禁用并清空ShowPoint
         ShowPoint->Enable(false);
 
-        ShowInterestResult->Clear();
-        ShowInterestResult->Enable(false);                                      //禁用并清空ShowInterestResult
+        ShowCommercialInterestRateResult->Clear();      
+        ShowCommercialInterestRateResult->Enable(false);                                                  //禁用并清空ShowInterestResult
 
         switch (event.GetSelection()) {
         case 1:
 
-            ChosenType_ShowInterest_Commercial->SetValue("4.9");                       //string_IT.Add(wxT("基准利率"));
+            ShowCommercialInterestRate->SetValue("4.9");                       //string_IT.Add(wxT("基准利率"));
             break;
         case 2:
-            ChosenType_ShowInterest_Commercial->SetValue("3.43");                      //string_IT.Add(wxT("基准利率下限（7折）"));
+            ShowCommercialInterestRate->SetValue("3.43");                      //string_IT.Add(wxT("基准利率下限（7折）"));
             break;
         case 3:
-            ChosenType_ShowInterest_Commercial->SetValue("5.39");                      //string_IT.Add(wxT("基准利率上限（1.1倍）"));
+            ShowCommercialInterestRate->SetValue("5.39");                      //string_IT.Add(wxT("基准利率上限（1.1倍）"));
             break;
         case 4:
-            ChosenType_ShowInterest_Commercial->SetValue("5.15");                      //string_IT.Add(wxT("基准利率上限（1.05倍）"));
+            ShowCommercialInterestRate->SetValue("5.15");                      //string_IT.Add(wxT("基准利率上限（1.05倍）"));
             break;
         case 5:
-            ChosenType_ShowInterest_Commercial->SetValue("4.17");                      //string_IT.Add(wxT("基准利率下限（85折）"));
+            ShowCommercialInterestRate->SetValue("4.17");                      //string_IT.Add(wxT("基准利率下限（85折）"));
             break;
         default:
             break;
         }
     }
+}
+
+void PortfolioLoan::OnSetPortfolioInterestType(wxCommandEvent& event)
+{
+
 }
 
 void PortfolioLoan::OnSetRepayType(wxCommandEvent& event)
@@ -361,7 +365,7 @@ void PortfolioLoan::OnSetTotalLoan(wxCommandEvent& event)
     for (int i = 0; i < InputCommercialLoan->GetLineLength(0); i++) {
         if (!wxIsxdigit(InputTotalLoan_string[i])) {                                                        //输入不合法
             InputCommercialLoan->Clear();                                                                        //清空输入
-            ProcessInputTotalLoanError();
+            ProcessInputCommercialLoanError();
         }
     }
     if (!InputCommercialLoan->IsEmpty() && !InputCommercialLoan->GetLineText(0).ToDouble(&TotalLoan)) {               //输入合法，将数据送入指定变量
@@ -377,8 +381,8 @@ void PortfolioLoan::OnSetMonth(wxCommandEvent& event)                           
 }
 
 void PortfolioLoan::OnUpdateShowInterest(wxCommandEvent& event) {                                          //显示利率方式
-    ShowInterest->SetValue(
-        ChosenType_ShowInterest_Commercial->GetLineText(0)
+    ShowCommercialInterestRate_Update->SetValue(
+        ShowCommercialInterestRate->GetLineText(0)
     );
 }
 
@@ -409,68 +413,50 @@ void PortfolioLoan::OnUpdateShowPoint(wxCommandEvent& event)                    
 
 void PortfolioLoan::OnGetInterestResult()                                                                  //显示计算所得年利率
 {
-    if (!ShowInterest->GetLineText(0).ToDouble(&InitialInterest)) {
+    if (!ShowCommercialInterestRate_Update->GetLineText(0).ToDouble(&InitialInterest)) {
         /*error*/
     }
     ResultIntersetRate = BasePoint + InitialInterest / 100;
 
     int accurracy = 2;
-    ShowInterestResult->SetValue(wxNumberFormatter::ToString(ResultIntersetRate, accurracy));
+    ShowCommercialInterestRateResult->SetValue(wxNumberFormatter::ToString(ResultIntersetRate, accurracy));
 
 }
 
 void PortfolioLoan::OnActionButton(wxCommandEvent& event)
 {
-    ///*处理checkbox异常*/
-    //if (!CheckRepayByPricipal->IsChecked() || !CheckRepayByInterest->IsChecked()) {                       //异常处理，防止用户没有选择checkbox
-    //    ProcessCheckBoxError();
-    //}
     /*checkbox选择后可进行操作*/
     if (CheckRepayByPricipal->IsChecked()) {
-        if (ChooseByHouse) {                                                                                //选择按房屋计算但并没有填入数据
-			if (InputPercentagePoint->IsEmpty()) {
-                ProcessInputPercentagePointEmptyError();
-            }
-            else {
-                ProcessDataByPrinciple();
-                ResultByPricipalDialog();
-            }
+        if (InputCommercialLoan->IsEmpty()) {
+            ProcessInputCommerciallLoanEmptyError();
         }
-        else if (ChooseByTotalLoan) {
-            if (InputCommercialLoan->IsEmpty()) {
-                ProcessInputTotalLoanEmptyError();
-            }
-            else {
-                ProcessDataByPrinciple();
-                ResultByPricipalDialog();
-            }
+        else if (InputProvidentFund->IsEmpty()) {
+            ProcessInputProvidentFundEmptyError();
         }
+        else{
+            ProcessDataByPrinciple();
+			ResultByPricipalDialog();
+		}
+        
     }
     else if (CheckRepayByInterest->IsChecked()) {
-        if (ChooseByHouse) {                                                                                //选择按房屋计算但并没有填入数据
-			if (InputPercentagePoint->IsEmpty()) {
-                ProcessInputPercentagePointEmptyError();
-            }
-            else {                                                                                          //异常结束
-                ProcessDataByInterest();
-                ResultByInterestDialog();
-            }
+		if (InputCommercialLoan->IsEmpty()) {
+            ProcessInputCommerciallLoanEmptyError();
+		}
+        else if (InputProvidentFund->IsEmpty()) {
+            ProcessInputProvidentFundEmptyError();
         }
-        else if (ChooseByTotalLoan) {
-            if (InputCommercialLoan->IsEmpty()) {
-                ProcessInputTotalLoanEmptyError();
-            }
-            else {
-                ProcessDataByInterest();
-                ResultByInterestDialog();
-            }
-        }
+        else {
+            ProcessDataByInterest();
+            ResultByInterestDialog();
+		}
     }
 }
 
 void PortfolioLoan::OnClearButton(wxCommandEvent& event)
 {
     InputCommercialLoan->Clear();
+    InputProvidentFund->Clear();
     InputPercentagePoint->Clear();
 }
 
@@ -516,20 +502,7 @@ void PortfolioLoan::ResultByPricipalDialog()
     rowSizer->Add(StaticText);
 
     colSizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
-    //首付
-    if (ChooseByHouse) {
-        rowSizer = new wxBoxSizer(wxHORIZONTAL);
 
-        StaticText = new wxStaticText(ReaultDialog, wxID_ANY, wxT("首付: "), wxDefaultPosition, wxDefaultSize);
-        wxTextCtrl* OutputDownPayment = new wxTextCtrl(ReaultDialog, wxID_ANY, wxNumberFormatter::ToString(DownPayment, accurracy), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-
-        rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
-        rowSizer->Add(StaticText);
-        rowSizer->Add(25, 0);
-        rowSizer->Add(OutputDownPayment, 1);//(wxNumberFormatter::ToString(ResultIntersetRate, accurracy)
-
-        colSizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
-    }
     //首月月供
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -615,20 +588,6 @@ void PortfolioLoan::ResultByInterestDialog()
     rowSizer->Add(StaticText);
 
     colSizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
-    //首付
-    if (ChooseByHouse) {
-        rowSizer = new wxBoxSizer(wxHORIZONTAL);
-
-        StaticText = new wxStaticText(ReaultDialog, wxID_ANY, wxT("首付: "), wxDefaultPosition, wxDefaultSize);
-        wxTextCtrl* OutputDownPayment = new wxTextCtrl(ReaultDialog, wxID_ANY, wxNumberFormatter::ToString(DownPayment, accurracy), wxDefaultPosition, wxDefaultSize, wxTE_READONLY);
-
-        rowSizer->SetMinSize(wxSize(200, StaticText->GetMinSize().y));
-        rowSizer->Add(StaticText);
-        rowSizer->Add(25, 0);
-        rowSizer->Add(OutputDownPayment, 1);//(wxNumberFormatter::ToString(ResultIntersetRate, accurracy)
-
-        colSizer->Add(rowSizer, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, 10);
-    }
     //每月月供：
     rowSizer = new wxBoxSizer(wxHORIZONTAL);
 
@@ -690,7 +649,7 @@ void PortfolioLoan::ResultByInterestDialog()
 }
 
 
-void PortfolioLoan::ProcessInputTotalLoanError()
+void PortfolioLoan::ProcessInputCommercialLoanError()
 {
     wxMessageDialog* dialog_NotInputTotalLoan = new wxMessageDialog(this,                             //给予用户提示
         "This is a message box",
@@ -719,10 +678,40 @@ void PortfolioLoan::ProcessInputTotalLoanError()
     dialog_NotInputTotalLoan->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
         &PortfolioLoan::MessageBoxWindowModalClosed, this);
     dialog_NotInputTotalLoan->ShowWindowModal();
+}
+void PortfolioLoan::ProcessInputProvidentFundError()
+{
+    wxMessageDialog* dialog_ErrorInputProvidentFund = new wxMessageDialog(this,                             //给予用户提示
+        "This is a message box",
+        "Message box text",
+        wxCENTER |
+        wxNO_DEFAULT | wxYES_NO | wxCANCEL |
+        wxICON_INFORMATION);
+
+    wxString extmsg;
+    if (dialog_ErrorInputProvidentFund->SetYesNoCancelLabels
+    (
+        "Answer &Yes",
+        "Answer &No",
+        "Refuse to answer"
+    ))
+    {
+        extmsg = "You have just input an ilegal char,\n"
+            "Please input a digit .";
+    }
+    else
+    {
+        extmsg = "Custom button labels are not supported on this platform,\n"
+            "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
+    }
+    dialog_ErrorInputProvidentFund->SetExtendedMessage(extmsg);
+    dialog_ErrorInputProvidentFund->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+        &PortfolioLoan::MessageBoxWindowModalClosed, this);
+    dialog_ErrorInputProvidentFund->ShowWindowModal();
 }
 void PortfolioLoan::ProcessInputPercentagePointError()
 {
-    wxMessageDialog* dialog_NotInputTotalLoan = new wxMessageDialog(this,                             //给予用户提示
+    wxMessageDialog* dialog_ErrorInputPercentagePoint = new wxMessageDialog(this,                             //给予用户提示
         "This is a message box",
         "Message box text",
         wxCENTER |
@@ -730,26 +719,27 @@ void PortfolioLoan::ProcessInputPercentagePointError()
         wxICON_INFORMATION);
 
     wxString extmsg;
-    if (dialog_NotInputTotalLoan->SetYesNoCancelLabels
+    if (dialog_ErrorInputPercentagePoint->SetYesNoCancelLabels
     (
         "Answer &Yes",
         "Answer &No",
         "Refuse to answer"
     ))
     {
-        extmsg = "You have just input an ilegal char,\n"
-            "Please input a digit .";
+        extmsg = "You Have Just Input an Ilegal Char,\n"
+            "Please Input a Digit .";
     }
     else
     {
         extmsg = "Custom button labels are not supported on this platform,\n"
             "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
     }
-    dialog_NotInputTotalLoan->SetExtendedMessage(extmsg);
-    dialog_NotInputTotalLoan->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+    dialog_ErrorInputPercentagePoint->SetExtendedMessage(extmsg);
+    dialog_ErrorInputPercentagePoint->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
         &PortfolioLoan::MessageBoxWindowModalClosed, this);
-    dialog_NotInputTotalLoan->ShowWindowModal();
+    dialog_ErrorInputPercentagePoint->ShowWindowModal();
 }
+
 void PortfolioLoan::ProcessCheckBoxError()
 {
     wxMessageDialog* dialog_NotSelectCheckBox = new wxMessageDialog(this,                             //给予用户提示
@@ -813,9 +803,9 @@ void PortfolioLoan::ProcessInputPercentagePointEmptyError()
     dialog_NotInputPercentagePoint->ShowWindowModal();
 }
 
-void PortfolioLoan::ProcessInputTotalLoanEmptyError()
+void PortfolioLoan::ProcessInputCommerciallLoanEmptyError()
 {
-    wxMessageDialog* dialog_NotInputTotalLoan = new wxMessageDialog(this,                             //给予用户提示
+    wxMessageDialog* dialog_NotInputCommercialLoan = new wxMessageDialog(this,                             //给予用户提示
         "This is a message box",
         "Message box text",
         wxCENTER |
@@ -823,14 +813,14 @@ void PortfolioLoan::ProcessInputTotalLoanEmptyError()
         wxICON_INFORMATION);
 
     wxString extmsg;
-    if (dialog_NotInputTotalLoan->SetYesNoCancelLabels
+    if (dialog_NotInputCommercialLoan->SetYesNoCancelLabels
     (
         "Answer &Yes",
         "Answer &No",
         "Refuse to answer"
     ))
     {
-        extmsg = "You didn't Input The Total Loan,\n"
+        extmsg = "You didn't Input The Commercial Loan,\n"
             "Please Input The Number.";
     }
     else
@@ -838,10 +828,41 @@ void PortfolioLoan::ProcessInputTotalLoanEmptyError()
         extmsg = "Custom button labels are not supported on this platform,\n"
             "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
     }
-    dialog_NotInputTotalLoan->SetExtendedMessage(extmsg);
-    dialog_NotInputTotalLoan->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+    dialog_NotInputCommercialLoan->SetExtendedMessage(extmsg);
+    dialog_NotInputCommercialLoan->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
         &PortfolioLoan::MessageBoxWindowModalClosed, this);
-    dialog_NotInputTotalLoan->ShowWindowModal();
+    dialog_NotInputCommercialLoan->ShowWindowModal();
+}
+
+void PortfolioLoan::ProcessInputProvidentFundEmptyError()
+{
+    wxMessageDialog* dialog_NotInputProvidentFund = new wxMessageDialog(this,                             //给予用户提示
+        "This is a message box",
+        "Message box text",
+        wxCENTER |
+        wxNO_DEFAULT | wxYES_NO | wxCANCEL |
+        wxICON_INFORMATION);
+
+    wxString extmsg;
+    if (dialog_NotInputProvidentFund->SetYesNoCancelLabels
+    (
+        "Answer &Yes",
+        "Answer &No",
+        "Refuse to answer"
+    ))
+    {
+        extmsg = "You didn't Input The Provident Fund,\n"
+            "Please Input The Number.";
+    }
+    else
+    {
+        extmsg = "Custom button labels are not supported on this platform,\n"
+            "so the default \"Yes\"/\"No\"/\"Cancel\" buttons are used.";
+    }
+    dialog_NotInputProvidentFund->SetExtendedMessage(extmsg);
+    dialog_NotInputProvidentFund->Bind(wxEVT_WINDOW_MODAL_DIALOG_CLOSED,
+        &PortfolioLoan::MessageBoxWindowModalClosed, this);
+    dialog_NotInputProvidentFund->ShowWindowModal();
 }
 
 void PortfolioLoan::MessageBoxWindowModalClosed(wxWindowModalDialogEvent& event)

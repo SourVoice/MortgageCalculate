@@ -17,18 +17,19 @@ public:
     wxStaticText* StaticText;
     //选则面积后部件更新
     wxTextCtrl* InputCommercialLoan;
-    wxTextCtrl* ProvidentFund;
+    wxTextCtrl* InputProvidentFund;
     wxTextCtrl* InputPercentagePoint;
-    wxTextCtrl* ShowInterest;
+
+    wxTextCtrl* ShowCommercialInterestRate;
+    wxTextCtrl* ShowInterstPortfolioRate;
+
+    wxTextCtrl* ShowCommercialInterestRate_Update;
     wxTextCtrl* ShowPoint;
-    wxTextCtrl* ChosenType_ShowInterest_Commercial;
-    wxTextCtrl* ShowInterestResult;
+    wxTextCtrl* ShowCommercialInterestRateResult;
 
     wxCheckBox* CheckRepayByInterest;
     wxCheckBox* CheckRepayByPricipal;
 
-    bool ChooseByHouse = true;
-    bool ChooseByTotalLoan = false;
 
 
     //按揭年数
@@ -55,7 +56,9 @@ public:
 
 private:
 
-    void OnSetInterestType(wxCommandEvent& event);
+    void OnSetCommercialInterestType(wxCommandEvent& event);
+    void OnSetPortfolioInterestType(wxCommandEvent& event);
+
     void OnSetRepayType(wxCommandEvent& event);
 
 
@@ -76,11 +79,13 @@ private:
     void ResultByInterestDialog();
 
     //异常处理
-    void ProcessInputTotalLoanError();
+    void ProcessInputCommercialLoanError();
+    void ProcessInputProvidentFundError();
     void ProcessInputPercentagePointError();
     void ProcessCheckBoxError();
     void ProcessInputPercentagePointEmptyError();
-    void ProcessInputTotalLoanEmptyError();
+    void ProcessInputCommerciallLoanEmptyError();
+    void ProcessInputProvidentFundEmptyError();
     void MessageBoxWindowModalClosed(wxWindowModalDialogEvent& event);
 
 
@@ -90,3 +95,15 @@ private:
     wxDECLARE_EVENT_TABLE();
 };
 #endif // !_PORTFOLIOLOAN_H_
+enum 
+{
+	ID_CHOICE_INTEREST_COMMERCIAL = wxID_HIGHEST + 1,
+    ID_CHOICE_INTEREST_PROTFOLIO,
+    ID_TEXTCRTL_COMMERCIAL_LOAN,
+    ID_TEXTCRTL_PROVIDENT_LOAN,
+
+    ID_TEXTCTRL_CHOSEN_SHOW_INTEREST_COMMERCIAL,
+    ID_TEXTCTRL_CHOSEN_SHOW_INTEREST_PROTFOLIO,
+
+    ID_TEXTCTRL_SHOW_COMMERCIAL_INTERESTRATE_UPDATE,
+};
