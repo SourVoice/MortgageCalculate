@@ -7,8 +7,6 @@ class cPanel : public wxPanel
 public:
 	cPanel(wxFrame* parent);
     ~cPanel();
-
-
 	wxBoxSizer* panelSizer = new wxBoxSizer(wxVERTICAL);
     wxFrame* Frame;
 

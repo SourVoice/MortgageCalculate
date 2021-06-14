@@ -19,10 +19,8 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, wxString("mg"), wxDefaultPosition)
 {
     SetIcon(wxICON(sample));
     //添加menu
-    //创建file,help菜单
-    wxMenu *menuFile = new wxMenu();
-    //file菜单选项
-    menuFile->Append(10001, "New");
+    wxMenu *menuFile = new wxMenu();               //创建file,help菜单 
+    menuFile->Append(10001, "New");                //file菜单选项
     menuFile->Append(10002, "Open");
     menuFile->Append(10003, "Save");
     menuFile->Append(10004, "Exit");
@@ -45,9 +43,8 @@ cMain::cMain() : wxFrame(nullptr, wxID_ANY, wxString("mg"), wxDefaultPosition)
     sizer->Add(panel, 1, wxEXPAND | wxALL, 5);
 
     this->SetSizer(sizer);
-    this->SetSize(100, 60);
+    this->SetSizerAndFit(sizer);
     sizer->SetSizeHints(this);
-    //this->SetSizerAndFit(sizer);
 
 }
 cMain::~cMain()

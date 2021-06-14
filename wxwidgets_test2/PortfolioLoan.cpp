@@ -16,19 +16,15 @@
 #include<cmath>
 
 BEGIN_EVENT_TABLE(PortfolioLoan, wxDialog)
-EVT_COMBOBOX(ID_CHOICE_INTEREST_COMMERCIAL, PortfolioLoan::OnSetCommercialInterestType)
-
-EVT_COMBOBOX(ID_CHOICE_LTY, PortfolioLoan::OnSetMonth)
-
-EVT_TEXT(ID_TEXTCRTL_TOTAL_LOAN, PortfolioLoan::OnSetTotalLoan)
-EVT_TEXT(ID_TEXTCTRL_CHOSEN_SHOW_INTEREST_COMMERCIAL, PortfolioLoan::OnUpdateShowInterest)
-EVT_TEXT(ID_TEXTCTRL_PERCENTAGE_POINT, PortfolioLoan::OnUpdateShowPoint)
-
-EVT_CHECKBOX(ID_CHECKBOX_REPAYTYPE_PRINCIPAL_INTEREST, PortfolioLoan::OnSetRepayType)
-EVT_CHECKBOX(ID_CHECKBOX_REPAYTYPE_PRINCIPAL, PortfolioLoan::OnSetRepayType)
-
-EVT_BUTTON(ID_BUTTON_ACTION, PortfolioLoan::OnActionButton)
-EVT_BUTTON(ID_BUTTON_CLEAR, PortfolioLoan::OnClearButton)
+EVT_COMBOBOX(ID_CHOICE_INTEREST_COMMERCIAL,                  PortfolioLoan::OnSetCommercialInterestType)
+EVT_COMBOBOX(ID_CHOICE_LTY,                                  PortfolioLoan::OnSetMonth)
+EVT_TEXT(ID_TEXTCRTL_TOTAL_LOAN,                             PortfolioLoan::OnSetTotalLoan)
+EVT_TEXT(ID_TEXTCTRL_CHOSEN_SHOW_INTEREST_COMMERCIAL,        PortfolioLoan::OnUpdateShowInterest)
+EVT_TEXT(ID_TEXTCTRL_PERCENTAGE_POINT,                       PortfolioLoan::OnUpdateShowPoint)
+EVT_CHECKBOX(ID_CHECKBOX_REPAYTYPE_PRINCIPAL_INTEREST,       PortfolioLoan::OnSetRepayType)
+EVT_CHECKBOX(ID_CHECKBOX_REPAYTYPE_PRINCIPAL,                PortfolioLoan::OnSetRepayType)
+EVT_BUTTON(ID_BUTTON_ACTION,                                 PortfolioLoan::OnActionButton)
+EVT_BUTTON(ID_BUTTON_CLEAR,                                  PortfolioLoan::OnClearButton)
 END_EVENT_TABLE()
 PortfolioLoan::PortfolioLoan(wxFrame* parent)
     :wxDialog(parent, wxID_ANY,
@@ -363,42 +359,42 @@ void PortfolioLoan::OnSetTotalLoan(wxCommandEvent& event)
 
     wxString InputTotalLoan_string = InputCommercialLoan->GetLineText(0);
     for (int i = 0; i < InputCommercialLoan->GetLineLength(0); i++) {
-        if (!wxIsxdigit(InputTotalLoan_string[i])) {                                                        //输入不合法
+        if (!wxIsxdigit(InputTotalLoan_string[i])) {                                                             //输入不合法
             InputCommercialLoan->Clear();                                                                        //清空输入
             ProcessInputCommercialLoanError();
         }
     }
-    if (!InputCommercialLoan->IsEmpty() && !InputCommercialLoan->GetLineText(0).ToDouble(&TotalLoan)) {               //输入合法，将数据送入指定变量
+    if (!InputCommercialLoan->IsEmpty() && !InputCommercialLoan->GetLineText(0).ToDouble(&TotalLoan)) {          //输入合法，将数据送入指定变量
         /*error*/
     }
 
 }
 
-void PortfolioLoan::OnSetMonth(wxCommandEvent& event)                                                      //还款次数
-{                                                                                                           //还款期限（month）
+void PortfolioLoan::OnSetMonth(wxCommandEvent& event)                                                            //还款次数
+{                                                                                                                //还款期限（month）
     double InitialValue = 360;
     Months = InitialValue - 12 * event.GetSelection();
 }
 
-void PortfolioLoan::OnUpdateShowInterest(wxCommandEvent& event) {                                          //显示利率方式
+void PortfolioLoan::OnUpdateShowInterest(wxCommandEvent& event) {                                                //显示利率方式
     ShowCommercialInterestRate_Update->SetValue(
         ShowCommercialInterestRate->GetLineText(0)
     );
 }
 
-void PortfolioLoan::OnUpdateShowPoint(wxCommandEvent& event)                                               //显示基点
+void PortfolioLoan::OnUpdateShowPoint(wxCommandEvent& event)                                                    //显示基点
 {
     if (InputPercentagePoint->IsEmpty()) {
         event.Skip();
     }
     wxString InputPercentagePoint_string = InputPercentagePoint->GetLineText(0);
-    for (int i = 0; i < InputPercentagePoint->GetLineLength(0); i++) {                                      //基点输入异常处理
+    for (int i = 0; i < InputPercentagePoint->GetLineLength(0); i++) {                                          //基点输入异常处理
         if (!wxIsdigit(InputPercentagePoint_string[i])) {
             InputPercentagePoint->Clear();
             ProcessInputPercentagePointError();
         }
     }
-    if (!InputPercentagePoint->IsEmpty()) {                                                                 //正常输入存入数据
+    if (!InputPercentagePoint->IsEmpty()) {                                                                     //正常输入存入数据
         if (!InputPercentagePoint->GetLineText(0).ToDouble(&BasePoint)) {
             /*error*/
         }
@@ -407,11 +403,11 @@ void PortfolioLoan::OnUpdateShowPoint(wxCommandEvent& event)                    
         int accurracy = 2;
         ShowPoint->SetValue(wxNumberFormatter::ToString(BasePoint, accurracy));
 
-		OnGetInterestResult();                                                                              //输入基点后计算年利率
+		OnGetInterestResult();                                                                                  //输入基点后计算年利率
     }
 }
 
-void PortfolioLoan::OnGetInterestResult()                                                                  //显示计算所得年利率
+void PortfolioLoan::OnGetInterestResult()                                                                       //显示计算所得年利率
 {
     if (!ShowCommercialInterestRate_Update->GetLineText(0).ToDouble(&InitialInterest)) {
         /*error*/

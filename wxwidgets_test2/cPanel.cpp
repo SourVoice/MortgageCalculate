@@ -15,15 +15,11 @@ EVT_BUTTON(ButtonProvidentFundLoan, cPanel::OnClickButton_ProvidentFundLoan)
 END_EVENT_TABLE()
 
 cPanel::cPanel(wxFrame* parent)
-    : wxPanel(parent, wxID_ANY, wxDefaultPosition)
+    : wxPanel(parent, wxID_ANY)
 {
     this->Frame = parent;
     wxGridSizer* grid = new wxGridSizer(4, 1, 5, 10);
-
-
     /*选项框,选项默认为0*/
-  
-
     grid->Add(
         new wxStaticText(this, wxID_STATIC,
 		wxT("贷款类型"),
@@ -39,13 +35,11 @@ cPanel::cPanel(wxFrame* parent)
         new wxButton(this, ButtonPortfoioLoan, "PortfoioLoan"),
         wxSizerFlags().Center());
 
-
-
-    //将grid与panel容器适配,加入到panelsizer中
     grid->SetSizeHints(this);
-    panelSizer->Add(grid, 1, wxEXPAND, 10);
-
-    this->SetSizerAndFit(panelSizer);
+    this->SetSizer(grid);
+    //panelSizer->Add(grid, 1, wxEXPAND, 10);
+    //this->SetSizer(panelSizer);
+    //this->SetSizerAndFit(panelSizer);
 }
 
 cPanel::~cPanel()
