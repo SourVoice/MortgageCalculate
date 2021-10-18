@@ -1,5 +1,6 @@
 # MortgageCalculate
 #### Use C++ as scoure files and wxWidgets as the GUI platform.
-#### The third part hasn't been finished. It can only show a Window.
+#### I guess this has been done already.
+#### The error's not much different from the result on other webs.
 #### Welcome your issue!
 ###### In fact, this is not necessary to git push。。😁 xiaoxiao就行 :)
